@@ -9,15 +9,16 @@
     ]
   },
   "scripts": {
-    "prepublish": "npm run test && npm run build",
-    "lint": "eslint src/* test/*",
-    "lint-fix": "eslint src/* test/* --fix",
-    "test": "npm run lint && mocha --require babel-core/register --require test/bootstrap.js --recursive test/unit --exit",
-    "e2e-test": "npm run lint && mocha --require babel-core/register --require test/bootstrap.js --recursive test/e2e --exit",
-    "all-test": "npm run lint && nyc mocha --require babel-core/register --require test/bootstrap.js --recursive test --exit",
-    "build": "babel src --out-dir dist",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "docs": "documentation build src/* -f md --github > API.md"
+    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "babel src --out-dir es",
+    "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/react-redux.js",
+    "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/react-redux.min.js",
+    "clean": "rimraf lib dist es coverage",
+    "coverage": "codecov",
+    "lint": "eslint src test/utils test/components",
+    "prepare": "npm run clean && npm run build",
+    "test": "node ./test/run-tests.js"
   },
   "repository": {
     "type": "git",
